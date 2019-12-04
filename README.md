@@ -10,3 +10,4 @@ Code to try predicting soccer results
 ```
 java -jar selenium-server-standalone-3.141.59.jar
 ```
+* If selenium standalone server is giving chrome version error, reclone repo and redownload everything in a new folder
