@@ -3,8 +3,12 @@
 import argparse
 import time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import NoSuchElementException
-
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def set_chrome_options(headless_mode=False):
     user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
@@ -19,8 +23,20 @@ def set_chrome_options(headless_mode=False):
 
 def crawl_individual_page(driver,page_link):
 
-    driver.get(page_link)
+    valid_bet_types = ["1X2","Total Goals Over/Under 2.5","Total Goals Over/Under 3.5"]
 
+    driver.get(page_link)
+    # TODO: add in custom check if element exists instead of sleeping
+    time.sleep(5)
+
+    bet_types_list = driver.find_elements_by_xpath('//div[@class="event-markets__market js-collapsable"]')
+
+    for bet_type in bet_types_list:
+        bet_type_string = bet_type.find_element_by_xpath('.//span[@class="header-title__title"]').text
+        
+        # only crawl valid bet types
+        if bet_type_string in valid_bet_types:
+            print('doing crawling for', bet_type_string)
 
 
 if __name__ == "__main__":
@@ -59,18 +75,12 @@ if __name__ == "__main__":
     try:
         alert = driver.switch_to.alert
         alert.accept()
-    except:
-        print("no alert to accept")
-
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.webdriver.common.by import By
-    from selenium.common.exceptions import TimeoutException
-
-    delay = 5 
+    except NoAlertPresentException:
+        print("No alert appeared")
 
     # wait for page to load finish
     try:
+        delay = 5 #seconds
         myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, '//table[@class="table-condensed"]')))
     except TimeoutException:
         print("page took too long to load")
