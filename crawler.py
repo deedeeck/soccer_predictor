@@ -81,6 +81,21 @@ def crawl_individual_page(driver,page_link):
 
     return crawled_data    
 
+def write_result_to_csv(result_dict):
+    import csv
+    import os
+
+    file_exists = os.path.isfile('result.csv')
+
+    with open('result.csv', 'a') as f: 
+        w = csv.DictWriter(f, result_dict.keys())
+
+        if not file_exists:
+            w.writeheader() 
+
+        w.writerow(result_dict)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -110,8 +125,8 @@ if __name__ == "__main__":
 
     driver.maximize_window()
 
-    # web_url = "https://online.singaporepools.com/en/sports/competition/36/football/england/english-premier"
-    web_url = "https://online.singaporepools.com/en/sports/event-details/30223/football/england/english-premier/manchester-city-vs-manchester-utd"
+    web_url = "https://online.singaporepools.com/en/sports/competition/36/football/england/english-premier"
+    # web_url = "https://online.singaporepools.com/en/sports/event-details/30223/football/england/english-premier/manchester-city-vs-manchester-utd"
 
     if driver.current_url != web_url:
         driver.get(web_url)
@@ -123,16 +138,17 @@ if __name__ == "__main__":
     except NoAlertPresentException:
         print("No alert appeared")
 
-    crawl_individual_page(driver,web_url)
+    # used to test individual webpage
+    result = crawl_individual_page(driver,web_url)
+    write_result_to_csv(result)
 
     # temp commented out
     # wait_till_element_loads(driver,'//table[@class="table-condensed"]')
+    # matches_link = [link.get_attribute("href") for link in driver.find_elements_by_xpath('//td[@class="col-xs-3 hidden-xs"]/span[@class="event-list__event-name"]/a')]
 
-    # matches_link = [link.get_attribute("href") for link in driver.find_elements_by_xpath('//span[@class="event-list__event-name"]/a')]
-        
     # for link in matches_link:
-    #     crawl_individual_page(driver,link)
-    #     break
+    #     result = crawl_individual_page(driver,link)
+    #     write_result_to_csv(result)
 
 
 # old code
