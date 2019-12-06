@@ -130,7 +130,6 @@ if __name__ == "__main__":
     driver.maximize_window()
 
     web_url = "https://online.singaporepools.com/en/sports/competition/36/football/england/english-premier"
-    # web_url = "https://online.singaporepools.com/en/sports/event-details/30223/football/england/english-premier/manchester-city-vs-manchester-utd"
 
     if driver.current_url != web_url:
         driver.get(web_url)
@@ -154,52 +153,5 @@ if __name__ == "__main__":
         result = crawl_individual_page(driver,link)
         write_result_to_csv(result)
 
-
-# old code
-# selected_div = driver.find_element_by_xpath('//div[@class="event-list"]')
-
-# get listed matches
-# bet_type_selector = selected_div.find_element_by_xpath('//select[@name="upcomingFootball_filterBetType"]')
-# bet_type_selection = selected_div.find_element_by_xpath("//option[@value='HL']")
-# bet_type_selection.click()
-# display_button = selected_div.find_element_by_xpath('//button[./span = "Display"]')
-# display_button.click()
-
-# match_odds = []
-# get individual matches data
-# matches_rows = selected_div.find_elements_by_xpath('//div[@class="event-list__event"]')
-
-# for match in matches_rows:
-
-#     try:
-#         match_title = match.find_element_by_xpath(
-#             './/span[@class="event-list__event-name"]/a'
-#         ).text.strip()
-#         print(match_title)
-#         outcomes = match.find_elements_by_xpath(
-#             './/div[@class="event-market__outcome-row"]/div[contains(@class,"outcome")]'
-#         )
-
-#         temp_dict = {"match_title": match_title}
-
-#         for outcome in outcomes:
-#             outcome_text = outcome.find_element_by_xpath(
-#                 './/span[@class="button-outcome__text"]/span'
-#             ).text.strip()
-#             outcome_price = outcome.find_element_by_xpath(
-#                 './/span[@class="button-outcome__price"]'
-#             ).text.strip()
-
-#             if "Over" in outcome_text:
-#                 temp_dict["over"] = {"Market": outcome_text, "odds": outcome_price}
-#             elif "Under" in outcome_text:
-#                 temp_dict["under"] = {"Market": outcome_text, "odds": outcome_price}
-
-#         match_odds.append(temp_dict)
-
-#     except NoSuchElementException:
-#         print('in exception')
-#         continue
-
-# print(match_odds)
-
+    if not remote_mode:
+        driver.quit()
