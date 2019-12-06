@@ -32,12 +32,14 @@ def wait_till_element_loads(driver,xpath_query):
 
 def crawl_individual_page(driver,page_link):
 
-    valid_bet_types = ["1X2","Total Goals Over/Under 2.5","Total Goals Over/Under 3.5"]
+    valid_bet_types = ["1X2","Total Goals Over/Under 2.5","Total Goals Over/Under 3.5","1/2 Goal"]
 
     if driver.current_url != page_link:
         driver.get(page_link)
 
     wait_till_element_loads(driver,'//div[@class="event-markets"]')
+
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
     fixture_title = driver.find_element_by_xpath('//span[@class="event-header__event-name"]/span').text.strip()
     fixture_date = driver.find_element_by_xpath('//span[@class="event-header__start-time"]').text.strip()
@@ -61,14 +63,23 @@ def crawl_individual_page(driver,page_link):
                 over_odds = odds[0].text
                 under_odds = odds[1].text
 
-    print(fixture_title)
-    print(fixture_date)
-    print(home_odds)
-    print(draw_odds)
-    print(away_odds)
-    print(over_odds)
-    print(under_odds)
-                
+            elif bet_type_string == "1/2 Goal":
+                 home_halfgoal_odds = odds[0].text
+                 away_halfgoal_odds = odds[1].text
+
+    crawled_data = {}
+    crawled_data['timestamp'] = timestamp
+    crawled_data['fixture_title'] = fixture_title
+    crawled_data['fixture_date'] = fixture_date
+    crawled_data['home_odds'] = home_odds
+    crawled_data['draw_odds'] = draw_odds
+    crawled_data['away_odds'] = away_odds
+    crawled_data['over_odds'] = over_odds
+    crawled_data['under_odds'] = under_odds
+    crawled_data['home_halfgoal_odds'] = home_halfgoal_odds
+    crawled_data['away_halfgoal_odds'] = away_halfgoal_odds
+
+    return crawled_data    
 
 if __name__ == "__main__":
 
@@ -100,7 +111,7 @@ if __name__ == "__main__":
     driver.maximize_window()
 
     # web_url = "https://online.singaporepools.com/en/sports/competition/36/football/england/english-premier"
-    web_url = "https://online.singaporepools.com/en/sports/event-details/30036/football/england/english-premier/sheffield-utd-vs-newcastle"
+    web_url = "https://online.singaporepools.com/en/sports/event-details/30223/football/england/english-premier/manchester-city-vs-manchester-utd"
 
     if driver.current_url != web_url:
         driver.get(web_url)
