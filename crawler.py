@@ -3,7 +3,6 @@
 import argparse
 import time
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
 
 
@@ -12,6 +11,7 @@ def set_chrome_options(headless_mode=False):
     options = webdriver.ChromeOptions()
     options.add_argument("user-agent=" + user_agent)
     options.add_argument("--profile-directory=Default")
+    options.add_argument("--window-size=1325x744")
 
     if headless_mode:
         options.add_argument("headless")
@@ -19,6 +19,7 @@ def set_chrome_options(headless_mode=False):
     return options
 
 def wait_till_element_loads(driver,xpath_query):
+    from selenium.webdriver.common.by import By
     from selenium.common.exceptions import TimeoutException
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
@@ -104,10 +105,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-r', '--remote', action='store_true', help="Set crawler to use remote selenium standalone server")
+    parser.add_argument('-hl', '--headless', action='store_true', help="Set crawler to be headless")
     parser.add_argument('-s', '--session', help="Set session id for remote session")
 
     args = parser.parse_args()
     remote_mode = args.remote
+    headless_mode = args.headless
     session_id = args.session
 
     if remote_mode : 
@@ -125,7 +128,7 @@ if __name__ == "__main__":
             quit()
     else:
         driver_path = "./chromedriver"
-        driver = webdriver.Chrome(driver_path, options=set_chrome_options())
+        driver = webdriver.Chrome(driver_path, options=set_chrome_options(headless_mode=headless_mode))
 
     driver.maximize_window()
 
@@ -145,7 +148,6 @@ if __name__ == "__main__":
     # result = crawl_individual_page(driver,web_url)
     # write_result_to_csv(result)
 
-    # temp commented out
     wait_till_element_loads(driver,'//table[@class="table-condensed"]')
     matches_link = [link.get_attribute("href") for link in driver.find_elements_by_xpath('//td[@class="col-xs-3 hidden-xs"]/span[@class="event-list__event-name"]/a')]
 
