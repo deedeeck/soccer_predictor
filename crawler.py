@@ -40,6 +40,7 @@ def crawl_individual_page(driver,page_link):
     wait_till_element_loads(driver,'//div[@class="event-markets"]')
 
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+    match_id = page_link.split("/")[6]
 
     fixture_title = driver.find_element_by_xpath('//span[@class="event-header__event-name"]/span').text.strip()
     fixture_date = driver.find_element_by_xpath('//span[@class="event-header__start-time"]').text.strip()
@@ -60,6 +61,7 @@ def crawl_individual_page(driver,page_link):
                 away_odds = odds[2].text
 
             elif bet_type_string == "Total Goals Over/Under 2.5" or bet_type_string == "Total Goals Over/Under 3.5":
+                over_under_type = " ".join(bet_type_string.split(" ")[-2:])
                 over_odds = odds[0].text
                 under_odds = odds[1].text
 
@@ -68,12 +70,14 @@ def crawl_individual_page(driver,page_link):
                  away_halfgoal_odds = odds[1].text
 
     crawled_data = {}
+    crawled_data['match_id'] = match_id
     crawled_data['timestamp'] = timestamp
     crawled_data['fixture_title'] = fixture_title
     crawled_data['fixture_date'] = fixture_date
     crawled_data['home_odds'] = home_odds
     crawled_data['draw_odds'] = draw_odds
     crawled_data['away_odds'] = away_odds
+    crawled_data['over_under_type'] = over_under_type
     crawled_data['over_odds'] = over_odds
     crawled_data['under_odds'] = under_odds
     crawled_data['home_halfgoal_odds'] = home_halfgoal_odds
@@ -139,16 +143,16 @@ if __name__ == "__main__":
         print("No alert appeared")
 
     # used to test individual webpage
-    result = crawl_individual_page(driver,web_url)
-    write_result_to_csv(result)
+    # result = crawl_individual_page(driver,web_url)
+    # write_result_to_csv(result)
 
     # temp commented out
-    # wait_till_element_loads(driver,'//table[@class="table-condensed"]')
-    # matches_link = [link.get_attribute("href") for link in driver.find_elements_by_xpath('//td[@class="col-xs-3 hidden-xs"]/span[@class="event-list__event-name"]/a')]
+    wait_till_element_loads(driver,'//table[@class="table-condensed"]')
+    matches_link = [link.get_attribute("href") for link in driver.find_elements_by_xpath('//td[@class="col-xs-3 hidden-xs"]/span[@class="event-list__event-name"]/a')]
 
-    # for link in matches_link:
-    #     result = crawl_individual_page(driver,link)
-    #     write_result_to_csv(result)
+    for link in matches_link:
+        result = crawl_individual_page(driver,link)
+        write_result_to_csv(result)
 
 
 # old code
