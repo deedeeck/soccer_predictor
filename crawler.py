@@ -2,6 +2,7 @@
 
 import argparse
 import time
+import os
 from selenium import webdriver
 from selenium.common.exceptions import NoAlertPresentException
 
@@ -15,8 +16,10 @@ def set_chrome_options(headless_mode=False):
 
     if headless_mode:
         options.add_argument("headless")
+        print('running in headless mode')
 
     return options
+
 
 def wait_till_element_loads(driver,xpath_query):
     from selenium.webdriver.common.by import By
@@ -34,6 +37,7 @@ def wait_till_element_loads(driver,xpath_query):
 def crawl_individual_page(driver,page_link):
 
     valid_bet_types = ["1X2","Total Goals Over/Under 2.5","Total Goals Over/Under 3.5","1/2 Goal"]
+    print("crawling pages...")
 
     if driver.current_url != page_link:
         driver.get(page_link)
@@ -90,9 +94,13 @@ def write_result_to_csv(result_dict):
     import csv
     import os
 
-    file_exists = os.path.isfile('result.csv')
+    print("saving results...")
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    output_path = f"{script_path}/result.csv"
 
-    with open('result.csv', 'a') as f: 
+    file_exists = os.path.isfile(output_path)
+
+    with open(output_path, 'a') as f: 
         w = csv.DictWriter(f, result_dict.keys())
 
         if not file_exists:
@@ -127,7 +135,8 @@ if __name__ == "__main__":
             print("Session id of remote server is :", driver.session_id)
             quit()
     else:
-        driver_path = "./chromedriver"
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        driver_path = f"{script_path}/chromedriver"
         driver = webdriver.Chrome(driver_path, options=set_chrome_options(headless_mode=headless_mode))
 
     driver.maximize_window()
