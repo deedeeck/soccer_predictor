@@ -107,3 +107,4 @@ venv.bak/
 *.DS_Store
 *chromedriver
 *selenium-server-standalone-3.141.59.jar
+*.csv
